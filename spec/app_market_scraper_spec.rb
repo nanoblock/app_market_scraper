@@ -5,10 +5,10 @@ describe AppMarketScraper do
     expect(AppMarketScraper::VERSION).not_to be nil
   end
 
-  it 'do App initialize' do
+  it 'do scraper initialize' do
     # expect(AppMarketScraper::Play::App.new('test').query).to eq 'test'
-    expect(AppMarketScraper::Play::App.new('facebook').start).not_to eq nil
-    # Typhoeus
+    expect(AppMarketScraper::Play::Scraper.new('facebook').start).not_to eq nil
+    
   end
 
 end

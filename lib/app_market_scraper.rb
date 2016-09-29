@@ -8,11 +8,12 @@ require 'app_market_scraper/util'
 require 'app_market_scraper/url'
 require 'app_market_scraper/play/constants'
 require 'app_market_scraper/play/app'
+require 'app_market_scraper/play/scraper'
 
 module AppMarketScraper
 
   def self.timeout
-    @timeout ||= 10
+    @timeout ||= 100
   end
 
   def self.timeout=(val)
@@ -20,7 +21,7 @@ module AppMarketScraper
   end
 
   def self.connect_timeout
-    @connect_timeout ||= 10
+    @connect_timeout ||= 100
   end
 
   def self.connect_timeout=(val)
