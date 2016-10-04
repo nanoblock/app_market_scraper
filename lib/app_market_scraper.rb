@@ -4,38 +4,39 @@ require 'nokogiri'
 
 require "app_market_scraper/version"
 require 'app_market_scraper/exception'
-require 'app_market_scraper/util'
 require 'app_market_scraper/url'
+
+require 'app_market_scraper/util/util'
+require 'app_market_scraper/util/network'
+require 'app_market_scraper/util/app_array'
+
+require 'app_market_scraper/play/play'
 require 'app_market_scraper/play/constants'
-require 'app_market_scraper/play/app'
-require 'app_market_scraper/play/scraper'
+require 'app_market_scraper/play/content/app'
+require 'app_market_scraper/play/search/scraper'
+require 'app_market_scraper/play/search/parser'
+require 'app_market_scraper/play/detail/scraper'
+require 'app_market_scraper/play/detail/parser'
+
 
 module AppMarketScraper
+  DEFAULT_LANG = 'ko'
+  DEFAULT_COUNTRY = 'ko'
 
-  def self.timeout
-    @timeout ||= 100
+  def self.lang
+    @lang ||= DEFAULT_LANG
   end
 
-  def self.timeout=(val)
-    @timeout = val
+  def self.lang=(value)
+    @lang = value
   end
 
-  def self.connect_timeout
-    @connect_timeout ||= 100
+  def self.country
+    @country ||= DEFAULT_COUNTRY
   end
 
-  def self.connect_timeout=(val)
-    @connect_timeout = val
-  end
-
-	# github 주소 바꾸기
-  def self.user_agent
-    @user_agent ||= "AppMarketScraper/#{AppMarketScraper::VERSION} / " \
-    "(+https://github.com/nanoblock/app_market_scraper)"
-  end
-
-  def self.user_agent=(val)
-    @user_agent = val
+  def self.country=(value)
+    @country = value
   end
 
 end
