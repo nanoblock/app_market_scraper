@@ -1,6 +1,7 @@
 require 'addressable/uri'
 require 'typhoeus'
 require 'nokogiri'
+require 'thread'
 
 require "app_market_scraper/version"
 require 'app_market_scraper/exception'
@@ -37,6 +38,14 @@ module AppMarketScraper
 
   def self.country=(value)
     @country = value
+  end
+
+  def self.mutex
+    @mutext ||= Mutex.new
+  end
+
+  def self.threads
+    @threads ||= []
   end
 
 end

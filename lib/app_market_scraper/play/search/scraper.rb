@@ -20,6 +20,9 @@ module AppMarketScraper::Play::Search
       uri = AppMarketScraper::GOOGLE_PLAY_SEARCH_URL
       uri += "?q=#{@query}"
       uri += "&c=#{AppMarketScraper::Play::CATEGORY}"
+      uri += "&hl=#{AppMarketScraper.lang}"
+      uri += "&gl=#{AppMarketScraper.country}"
+      # puts uri
     end
 
     def response_handler(response)

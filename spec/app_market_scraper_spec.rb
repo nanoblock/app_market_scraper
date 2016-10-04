@@ -6,31 +6,39 @@ describe AppMarketScraper do
   end
 
   it 'do SearchScraper class validator' do
+    AppMarketScraper.threads << Thread.new { AppMarketScraper::Play::Search::Scraper.new('facebook').start }
+    AppMarketScraper.threads << Thread.new { AppMarketScraper::Play::Search::Scraper.new('티맵').start }
+    AppMarketScraper.threads.each do|thread|
+      thread.join
+    end
+
     # AppMarketScraper::Play::Search::Scraper.new('facebook').start
-    # AppMarketScraper::Play.result.elements.each do |value|
-    #   p value.url
-    # end
+    # AppMarketScraper::Play::Search::Scraper.new('tmap').start
+    
+    AppMarketScraper::Play.result.elements.each do |value|
+      p value.url
+    end
   end
 
   it 'do DetailScraper class validator' do
-    AppMarketScraper::Play::Detail::Scraper.new('com.facebook.moments').start
-    AppMarketScraper::Play.result.elements.each do |value|
-      p value.name
-      p value.email
-      p value.category
-      p value.developer
-      p value.package
-      p value.stars
-      p value.download
-      p value.updated
-      p value.content_rating
-      p value.version
-      p value.operating_system
-      p value.address
-      p value.url
-      p value.image_url
-      p value.developer_web_site
-    end
+    # AppMarketScraper::Play::Detail::Scraper.new('com.facebook.moments').start
+    # AppMarketScraper::Play.result.elements.each do |value|
+    #   p value.name
+    #   p value.email
+    #   p value.category
+    #   p value.developer
+    #   p value.package
+    #   p value.stars
+    #   p value.download
+    #   p value.updated
+    #   p value.content_rating
+    #   p value.version
+    #   p value.operating_system
+    #   p value.address
+    #   p value.url
+    #   p value.image_url
+    #   p value.developer_web_site
+    # end
     
   end
 

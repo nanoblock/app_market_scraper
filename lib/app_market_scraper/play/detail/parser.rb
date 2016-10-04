@@ -8,27 +8,31 @@ module AppMarketScraper::Play::Detail
     end
 
     def parse
-      doc = Nokogiri::HTML(body)
+      response_html = Nokogiri::HTML(body)
 
-      if doc.css('.body-content').empty?
+      if response_html.css('.body-content').empty?
         raise AppMarketScraper::ParserError.new('Could not parse app store page')
+        return
       end
 
       begin
         unless @app.nil?
-          parse_detail(doc)
-          # p extract_secondary_content(doc)
+          parse_detail(response_html)
+          
         else
           @app = AppMarketScraper::Play::App.new
-          parse_detail_all(doc)
+          # parse_detail_all(response_html)
+          # extract_secondary_content(response_html)
         end
-
+        puts "name -> #{@app.name}, email -> #{@app.email}"
       rescue
         raise AppMarketScraper::ParserError.new("Could not parse app store page")
+        return
       ensure
-        AppMarketScraper::Play.result.add(@app)
-        AppMarketScraper::Util.play_scrap_counter
+        
       end
+      AppMarketScraper::Play.result.add(@app)
+      AppMarketScraper::Util.play_scrap_counter
       # 
       # p @app
     end
@@ -59,19 +63,19 @@ module AppMarketScraper::Play::Detail
     end
 
     def extract_name(response_html)
-      @app.name = response_html.css('.info-container .document-title .id-app-title').text.strip
+      @app.name ||= response_html.css('.info-container .document-title .id-app-title').text.strip
     end
 
     def extract_developer(response_html)
-      @app.developer = response_html.css('.document-subtitle [@itemprop="name"]').text.strip
+      @app.developer ||= response_html.css('.document-subtitle [@itemprop="name"]').text.strip
     end
     def extract_package(response_html)
-      @app.package = response_html.css('.details-wrapper').first['data-docid'].strip
+      @app.package ||= response_html.css('.details-wrapper').first['data-docid'].strip
     end
 
     def extract_stars(response_html)
       star = response_html.css('.tiny-star').first['aria-label'].strip
-      @app.stars = pattern_match_decimal(star).to_s
+      @app.stars ||= pattern_match_decimal(star).to_s
     end
 
     def pattern_match_decimal(string)
@@ -79,61 +83,65 @@ module AppMarketScraper::Play::Detail
     end
 
     def extract_url(response_html)
-      # puts "COME"
-      @app.url = AppMarketScraper::GOOGLE_PLAY_DETAIL_URL + "?id=#{extract_package(response_html)}".strip
+      @app.url ||= AppMarketScraper::GOOGLE_PLAY_DETAIL_URL + "?id=#{extract_package(response_html)}".strip
     end
     def extract_image_url(response_html)
-      @app.image_url = "https:" + response_html.css('.cover-container .cover-image').first['src'].strip
+      @app.image_url ||= "https:" + response_html.css('.cover-container .cover-image').first['src'].strip
     end
 
     def extract_updated(response_html)
-      @app.updated = response_html.css('.details-section-contents .meta-info [@itemprop="datePublished"]').text.strip
+      @app.updated ||= response_html.css('.details-section-contents .meta-info [@itemprop="datePublished"]').text.strip
     end
 
     def extract_download(response_html)
-      @app.download = response_html.css('.details-section-contents .meta-info [@itemprop="numDownloads"]').text.strip
+      @app.download ||= response_html.css('.details-section-contents .meta-info [@itemprop="numDownloads"]').text.strip
     end
 
     def extract_content_rating(response_html)
-      @app.content_rating = response_html.css('.details-section-contents .meta-info [@itemprop="contentRating"]').text.strip
+      @app.content_rating ||= response_html.css('.details-section-contents .meta-info [@itemprop="contentRating"]').text.strip
     end
 
     def extract_version(response_html)
-      @app.version = response_html.css('.details-section-contents .meta-info [@itemprop="softwareVersion"]').text.strip
+      @app.version ||= response_html.css('.details-section-contents .meta-info [@itemprop="softwareVersion"]').text.strip
     end
 
     def extract_operating_system(response_html)
-      @app.operating_system = response_html.css('.details-section-contents .meta-info [@itemprop="operatingSystems"]').text.strip
+      @app.operating_system ||= response_html.css('.details-section-contents .meta-info [@itemprop="operatingSystems"]').text.strip
     end
     
     def extract_developer_web_site(response_html)
-      @app.developer_web_site = response_html.css('.details-section-contents .meta-info .contains-text-link .dev-link').at(0)['href'].strip
+      @app.developer_web_site ||= response_html.css('.details-section-contents .meta-info .contains-text-link .dev-link').at(0)['href'].strip
     end
     
     def extract_email(response_html)
-      @app.email = response_html.css('.details-section-contents .meta-info .contains-text-link .dev-link')
-      .at(1)['href'].strip.split(':').at(1)
+      response_html.css('.details-section-contents .meta-info .contains-text-link .dev-link')
+      .each do |value|
+        email = value['href'].strip.split('mailto:').at(1)
+        unless email.nil?
+          @app.email ||= email
+          return
+        end
+      end
     end
 
     def extract_address(response_html)
-      @app.address = response_html.css('.details-section-contents .meta-info .content .physical-address').text.strip
+      @app.address ||= response_html.css('.details-section-contents .meta-info .content .physical-address').text.strip
     end
-    # inapp-msg
 
     def extract_description(response_html)
       description = ""
       description << response_html.css('.main-content .description .show-more-content div').text.strip
       description << response_html.css('.main-content .description .show-more-content div p').text.strip
-      @app.description = description
+      @app.description ||= description
     end
 
     def extract_category(response_html)
-      @app.category = response_html.css('.info-container .category @href').first.value.strip.downcase!.split("/").last
+      @app.category ||= response_html.css('.info-container .category @href').first.value.strip.downcase!.split("/").last
     end
 
     def extract_secondary_content(response_html)
-      p response_html.css('.details-section-contents .cards .card .card-content .details .title')
-      .first.text
+      p response_html.css('.details-section-contents .cards .card .card-content .card-click-target')
+      .size
     end
 
   end

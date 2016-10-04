@@ -11,6 +11,7 @@ module AppMarketScraper::Play::Search
       
       unless doc.css('.card').any?
         raise AppMarketScraper::ParserError.new('Could not parse app store page')
+        return
       end
 
       apps = Array.new
@@ -28,6 +29,7 @@ module AppMarketScraper::Play::Search
           
         rescue
           raise AppMarketScraper::ParserError.new("Could not parse app store page")
+          return
         ensure
           apps << app
         end

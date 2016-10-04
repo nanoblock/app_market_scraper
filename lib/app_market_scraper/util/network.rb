@@ -40,7 +40,8 @@ module AppMarketScraper::Util
     end
 
     def self.build_uri(uri)
-      Addressable::URI.parse(uri)
+      uri = Addressable::URI.parse(uri)
+      uri.normalize
     end
 
     def self.throw_exception(response)

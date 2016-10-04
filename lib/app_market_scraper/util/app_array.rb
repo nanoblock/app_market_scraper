@@ -5,7 +5,7 @@ module AppMarketScraper::Util
     def initialize(element=nil, type="play", opts={})
       @elements = Array.new
       type_validator(type)
-      
+      @mutex = AppMarketScraper.mutex
       # add(element)
     end
 
@@ -13,17 +13,20 @@ module AppMarketScraper::Util
       params_check(element)
 
       if instance_of?(element)
-        @elements << element
+        @mutex.synchronize do
+          @elements << element
+        end
       end
       self
     end
 
     def add_collection(value)
       params_check(value)
-
-      elements.concat value
-      elements.compact!
-      elements.uniq
+      @mutex.synchronize do
+        elements.concat value
+        elements.compact!
+        elements.uniq
+      end
       self
     end
 
@@ -48,6 +51,7 @@ module AppMarketScraper::Util
         return result
       else
         raise AppMarketScraper::NotFoundError.new("FAIL Get - Element Not Found")
+        return
       end
 
     end
@@ -75,6 +79,7 @@ module AppMarketScraper::Util
     def type_validator(type)
       unless type == "play" || type == "apple"
         raise AppMarketScraper::ParamsError.new("invalidated this type!!")
+        return
       end
       @type = type
     end
@@ -82,6 +87,7 @@ module AppMarketScraper::Util
     def instance_of?(element)
       unless element.kind_of? AppMarketScraper::Play::App
         raise AppMarketScraper::ParamsError.new("invalidated this elements instance!!")
+        return
       end
       return true
     end
@@ -89,6 +95,7 @@ module AppMarketScraper::Util
     def params_check(param)
       if param.nil?
         raise AppMarketScraper::ParamsError.new("Parameter is null")
+        return
       end
     end
 
