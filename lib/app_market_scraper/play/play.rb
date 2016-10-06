@@ -5,4 +5,8 @@ module AppMarketScraper::Play
     @result ||= AppMarketScraper::Util::AppArray.new
   end
 
+  def self.array
+    @array ||= AppMarketScraper::Util::AppMarketScraperArray.new
+  end
+
 end

@@ -10,8 +10,7 @@ module AppMarketScraper::Play::Search
       doc = Nokogiri::HTML(body)
       
       unless doc.css('.card').any?
-        raise AppMarketScraper::ParserError.new('Could not parse app store page')
-        return
+        puts AppMarketScraper::ParserError.new('Could not parse app store page')
       end
 
       apps = Array.new
@@ -28,8 +27,8 @@ module AppMarketScraper::Play::Search
           app.image_url = extract_image_url(response_html)
           
         rescue
-          raise AppMarketScraper::ParserError.new("Could not parse app store page")
-          return
+          puts AppMarketScraper::ParserError.new("Could not parse app store page")
+          # raise AppMarketScraper::ParserError.new("Could not parse app store page")
         ensure
           apps << app
         end
@@ -73,9 +72,12 @@ module AppMarketScraper::Play::Search
     end
 
     def extract_stars(response_html)
-      star = response_html.css('.card-content .reason-set .stars-container .reason-set-star-rating .tiny-star')
-        .first['aria-label'].strip
+      # star = response_html.css('.card-content .reason-set .stars-container .reason-set-star-rating .tiny-star')
+      #   .first['aria-label'].strip
 
+      # pattern_match_decimal(star).to_s
+       
+      star = response_html.css('.tiny-star').first['aria-label']
       pattern_match_decimal(star).to_s
     end
 

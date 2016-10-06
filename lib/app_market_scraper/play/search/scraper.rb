@@ -3,6 +3,7 @@ module AppMarketScraper::Play::Search
     attr_reader :query
 
     def initialize(query, opts={})
+      AppMarketScraper.current_time
       @query = query
       @request_opts = AppMarketScraper::Util::Network.request_opts(opts)
     end

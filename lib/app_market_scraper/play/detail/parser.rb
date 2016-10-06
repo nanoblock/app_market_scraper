@@ -11,7 +11,7 @@ module AppMarketScraper::Play::Detail
       response_html = Nokogiri::HTML(body)
 
       if response_html.css('.body-content').empty?
-        raise AppMarketScraper::ParserError.new('Could not parse app store page')
+        puts AppMarketScraper::ParserError.new('Could not parse app store page')
         return
       end
 
@@ -21,20 +21,35 @@ module AppMarketScraper::Play::Detail
           
         else
           @app = AppMarketScraper::Play::App.new
-          # parse_detail_all(response_html)
-          # extract_secondary_content(response_html)
+          parse_detail_all(response_html)
+          
         end
-        puts "name -> #{@app.name}, email -> #{@app.email}"
-      rescue
-        raise AppMarketScraper::ParserError.new("Could not parse app store page")
-        return
-      ensure
         
+      rescue
+        puts AppMarketScraper::ParserError.new("Could not parse app store page")
       end
-      AppMarketScraper::Play.result.add(@app)
-      AppMarketScraper::Util.play_scrap_counter
-      # 
-      # p @app
+
+      
+      if AppMarketScraper::Util.current_size <= AppMarketScraper.app_limit
+        AppMarketScraper::Play.result.add(@app)
+        AppMarketScraper::Util.play_scrap_counter
+        
+        AppMarketScraper::Play.array.add_collection(extract_test(response_html))
+
+        # AppMarketScraper::Play.array.elements.each do |value|
+        #   AppMarketScraper.threads.add(Thread.new { AppMarketScraper::Play::Search::Scraper.new(value.name).start } )
+        # end
+
+      else
+        AppMarketScraper::threads.elements.each do |thread|
+          thread.terminate
+          # thread.stop
+        end
+        # puts "comecome"
+        Thread.exit
+        puts AppMarketScraper::ParserError.new("LIMIT")
+      end
+      
     end
 
     private
@@ -140,8 +155,20 @@ module AppMarketScraper::Play::Detail
     end
 
     def extract_secondary_content(response_html)
-      p response_html.css('.details-section-contents .cards .card .card-content .card-click-target')
-      .size
+
+      # AppMarketScraper::GOOGLE_PLAY_BASE_URL + response_html.css('.details-section-contents .cards .card .card-content .card-click-target')
+      # .first['href'].strip
+      secondary_apps = []
+      response_html.css('.details-section-contents .cards .card .card-content .cover .card-click-target @href')
+      .each {|value| secondary_apps << AppMarketScraper::GOOGLE_PLAY_BASE_URL + value.to_s.strip }
+      secondary_apps
+    end
+
+    def extract_test(response_html)
+      secondary_apps = []
+      response_html.css('.details-section-contents .cards .card .card-content .cover .card-click-target .preview-overlay-container @data-docid')
+      .each {|value| secondary_apps << value.to_s.strip }
+      secondary_apps
     end
 
   end
