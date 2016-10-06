@@ -1,9 +1,9 @@
 module AppMarketScraper::Util
   class AppArray < AppMarketScraperArray
-    attr_reader :type, :elements
+    attr_reader :type, :array
     #default type is play
     def initialize(element=nil, type="play", opts={})
-      @elements ||= Array.new
+      @array ||= Array.new
       type_validator(type)
     end
 
@@ -17,7 +17,7 @@ module AppMarketScraper::Util
 
     def type_validator(type)
       unless type == "play" || type == "apple"
-        raise AppMarketScraper::ParamsError.new("invalidated this type!!")
+        AppMarketScraper::ParamsError.new("invalidated this type!!")
         return
       end
       @type = type
@@ -25,7 +25,7 @@ module AppMarketScraper::Util
 
     def instance_of?(element)
       unless element.kind_of? AppMarketScraper::Play::App
-        raise AppMarketScraper::ParamsError.new("invalidated this elements instance!!")
+        AppMarketScraper::ParamsError.new("invalidated this elements instance!!")
         return
       end
       return true

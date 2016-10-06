@@ -1,97 +1,93 @@
 module AppMarketScraper::Util
-  class AppMarketScraperArray
-    attr_reader :elements
+  class AppMarketScraperArray < Array
+    attr_reader :array
 
     def initialize(element=nil)
-      @elements ||= Array.new
+      @array ||= Array.new
     end
 
     def add(element)
-      params_check(element)
-
-      AppMarketScraper.mutex.synchronize do
-          elements << element
+      if params_check(element)
+        AppMarketScraper.mutex.synchronize do
+          array << element
+        end
       end
       self
     end
 
     def add_collection(value)
-      params_check(value)
-      
-      AppMarketScraper.mutex.synchronize do
-        elements.concat value
-        elements.flatten!
-        elements.compact!
-        elements.uniq!
+      if params_check(value)
+        AppMarketScraper.mutex.synchronize do
+          array.concat value
+          array.flatten!
+          array.compact!
+          array.uniq!
+        end
       end
       self
     end
 
+    def pop
+      unless array.empty?
+        result = array.get(0)
+        array.delete(0)
+        return result
+      else
+        AppMarketScraper::AppMarketScraperArrayError.new("Elements is null")
+      end
+    end
+
     def uniq
-      elements.uniq!
-      elements
+      array.uniq!
+      array
     end
 
     def last
-      elements.last
+      array.last
     end
 
-    def get(element)
-      params_check(element)
-
-      if element.kind_of? Integer
-        result = elements[element]
-      end
-
-      elements.each do |value|
-        if value == element
-          result = value
-        end
-      end
-
-      unless result.nil?
-        return result
-      else
-        raise AppMarketScraper::NotFoundError.new("FAIL Get - Element Not Found")
-        return
+    def get(value)
+      if params_check(value) && !array.empty? && value.kind_of?(Integer)
+        return result = array[value]
       end
     end
 
     def size
-      elements.length
+      array.length
     end
 
     def clear
-      elements.clear
+      array.clear
     end
 
     def delete_all
+      "come"
       self.clear
     end
 
     def delete(element)
       value = get(element)
-      elements.delete(value) { raise AppMarketScraper::NotFoundError.new("FAIL DELETE - Elements Not Found") }
+      array.delete_at(element) { AppMarketScraper::NotFoundError.new("FAIL DELETE - Elements Not Found") }
       self
     end
+
     def find_package(package)
-      elements.each do |value|
+      array.each do |value|
         if package == value
-          # puts "same"
           return false
         else
-          # puts "not same"
           return true
         end
-
       end
     end
+
     private
     def params_check(param)
       if param.nil?
-        raise AppMarketScraper::ParamsError.new("Parameter is null")
-        return
+        AppMarketScraper::ParamsError.new("Parameter is null")
+        return false
       end
+      return true
     end
 
   end

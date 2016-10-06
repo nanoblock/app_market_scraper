@@ -1,57 +1,64 @@
 module AppMarketScraper::Play::Search
   class Parser
-    attr_reader :body
+    attr_reader :body, :type
 
-    def initialize(html_body)
+    def initialize(html_body, opts={})
       @body = html_body
+      if opts[:type] == "multi"
+        @type = opts[:type]
+      else
+        @type = "base"
+      end
+
+      opts.delete(:type)
     end
 
     def parse
       doc = Nokogiri::HTML(body)
       
       unless doc.css('.card').any?
-        puts AppMarketScraper::ParserError.new('Could not parse app store page')
+        AppMarketScraper::ParserError.new('Could not parse app store page')
+        return
       end
 
-      apps = Array.new
+      
+      @app = AppMarketScraper::Play::App.new
 
       doc.css('.card').each do |response_html|
         begin
-          app = AppMarketScraper::Play::App.new
-          # parse(app, response_html)
-          app.name = extract_name(response_html)
-          app.developer = extract_developer(response_html)
-          app.package = extract_package(response_html)
-          app.stars = extract_stars(response_html)
-          app.url = AppMarketScraper::GOOGLE_PLAY_BASE_URL + extract_url(response_html)
-          app.image_url = extract_image_url(response_html)
-          
+          parse_search(doc)
+
+          if type == "base"
+            return AppMarketScraper::Play::Detail::Scraper.new(@app.package, type: type).start
+            # return @app
+          else
+            apps = Array.new
+            apps << @app
+            apps.each do |elements|
+              AppMarketScraper::Play::Detail::Scraper.new(elements.package, type: type).start
+            end
+          end
         rescue
-          puts AppMarketScraper::ParserError.new("Could not parse app store page")
-          # raise AppMarketScraper::ParserError.new("Could not parse app store page")
-        ensure
-          apps << app
+          AppMarketScraper::ParserError.new("Could not parse app store page")
+          return
         end
       end
-
-      apps.each do |result|
-        AppMarketScraper::Play::Detail::Scraper.new(result.package, result).start
-      end
-
-      
-      # AppMarketScraper::Play::Detail::Parser.new().parse
-
-      # print apps
     end
 
     private
-    # def parse(app, response_html)
+    def parse_search(response_html)
+      @app.name ||= extract_name(response_html)
+      @app.developer ||= extract_developer(response_html)
+      @app.package ||= extract_package(response_html)
+      @app.stars ||= extract_stars(response_html)
+      @app.url ||= extract_url(response_html)
+      @app.image_url ||= extract_image_url(response_html)
       
-    # end
+    end
 
     def extract_url(response_html)
-      Addressable::URI.parse(response_html.css('.card-content a.card-click-target').first['href'].strip)
-      # id = uri.query_values['id']
+      AppMarketScraper::GOOGLE_PLAY_DETAIL_URL + "?id=#{extract_package(response_html)}".strip
+      # Addressable::URI.parse(response_html.css('.card-content a.card-click-target').first['href'].strip)
     end
 
     def extract_package(response_html)

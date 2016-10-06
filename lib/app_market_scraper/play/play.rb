@@ -1,12 +1,11 @@
 module AppMarketScraper::Play
   
-  def self.result
-    # puts "come"
-    @result ||= AppMarketScraper::Util::AppArray.new
+  def self.array
+    @array ||= AppMarketScraper::Util::AppArray.new
   end
 
-  def self.array
-    @array ||= AppMarketScraper::Util::AppMarketScraperArray.new
+  def self.package
+    @package ||= AppMarketScraper::Util::AppMarketScraperArray.new
   end
 
 end

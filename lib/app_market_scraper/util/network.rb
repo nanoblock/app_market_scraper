@@ -48,11 +48,11 @@ module AppMarketScraper::Util
       codes = "message=#{response.return_message}, code=#{response.code}, return_code=#{response.return_code}"
         case response.code
         when 404
-          puts AppMarketScraper::NotFoundError.new("Unable to find app in store: #{codes}")
+          AppMarketScraper::NotFoundError.new("Unable to find app in store: #{codes}")
         when 403
-          puts AppMarketScraper::UnavailableError.new("Unavailable app (country restriction?): #{codes}")
+          AppMarketScraper::UnavailableError.new("Unavailable app (country restriction?): #{codes}")
         else
-          puts AppMarketScraper::ResponseError.new("Unhandled response: #{codes}")
+          AppMarketScraper::ResponseError.new("Unhandled response: #{codes}")
         end
     end
 

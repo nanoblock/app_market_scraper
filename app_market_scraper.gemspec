@@ -11,7 +11,6 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{This gem is application market scraper}
   spec.description   = %q{TODO: 
-    1. CSV optimization STDOUT 
     2. sync -> true setting & change error class Logger -> http://blog.livedoor.jp/sonots/archives/32645828.html
     3. create hydra queue handler}
   spec.homepage      = "https://github.com/nanoblock/app_market_scraper"
