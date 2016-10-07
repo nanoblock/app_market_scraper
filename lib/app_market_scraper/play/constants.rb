@@ -74,7 +74,11 @@ module AppMarketScraper::Play
   #   @category_constants ||= CATEGORY_CONSTANTS
   # end
 
-  def self.category_constants(value="game")
+  def self.categorys
+    @category_constants ||= CATEGORY_CONSTANTS
+  end
+
+  def self.categorys_find_by_key(value="game")
     @category_constants ||= CATEGORY_CONSTANTS
     if @category_constants.has_key?(value.to_sym)
       return @category_constants[value.to_sym]

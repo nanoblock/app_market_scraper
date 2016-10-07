@@ -15,32 +15,39 @@ module AppMarketScraper::Play::Category
     def parse
       response_html = Nokogiri::HTML(body)
       
-      unless response_html.css('.card').any?
+      unless response_html.css('.browse-page').any?
         AppMarketScraper::ParserError.new('Could not parse app store page')
         return
       end
 
       @app = AppMarketScraper::Play::App.new
-
-      response_html.css('.card').each do |response_html|
+      packages = []
+      response_html.css('.card .card-content').each do |response_html|
         begin
-          parse_search(response_html)
-
-          if type == "base"
-            return AppMarketScraper::Play::Detail::Scraper.new(@app.package, type: type).start
-            # return @app
-          else
-            apps = Array.new
-            apps << @app
-            apps.each do |elements|
-              AppMarketScraper::Play::Detail::Scraper.new(elements.package, type: type).start
-            end
-          end
+          packages << extract_package(response_html)
         rescue
           AppMarketScraper::ParserError.new("Could not parse app store page")
           return
         end
       end
+      AppMarketScraper::Play.package.add_collection(packages)
+      if AppMarketScraper.current_size == AppMarketScraper.app_limit
+        AppMarketScraper::ParserError.new("#{AppMarketScraper.current_size} scraping google app success::Category")
+        Thread::list.each {|t| Thread::kill(t) if t != Thread::current}
+        return
+      end
+      packages
+    end
+
+    private
+    def extract_package(response_html)
+      response_html.css('@data-docid').last.text
+
+      # .each do |package|
+      #   packages << package.text.strip
+      # end
+      # packages
+      # 
     end
 
   end

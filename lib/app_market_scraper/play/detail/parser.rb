@@ -32,13 +32,17 @@ module AppMarketScraper::Play::Detail
         AppMarketScraper::ParserError.new("Could not parse app store page")
       end
 
-      if AppMarketScraper.current_size <= AppMarketScraper.app_limit
+      if AppMarketScraper.current_size == AppMarketScraper.app_limit
+        AppMarketScraper::ParserError.new("#{AppMarketScraper.current_size} scraping google app success::Detail")
+        Thread::list.each {|t| Thread::kill(t) if t != Thread::current}
+        # raise Parallel::Kill
+        return
+        # Thread.exit
+      else
         AppMarketScraper::Play.array.add(@app)
         AppMarketScraper.play_scrap_counter
         
-        AppMarketScraper::Play.package.add_collection(extract_test(response_html))
-      else
-        Thread.exit
+        AppMarketScraper::Play.package.add_collection(extract_secondary_content(response_html))
       end
       
     end
@@ -145,19 +149,7 @@ module AppMarketScraper::Play::Detail
     end
 
     def extract_secondary_content(response_html)
-      # AppMarketScraper::GOOGLE_PLAY_BASE_URL + response_html.css('.details-section-contents .cards .card .card-content .card-click-target')
-      # .first['href'].strip
-      secondary_apps = []
-      response_html.css('.details-section-contents .cards .card .card-content .cover .card-click-target @href')
-      .each {|value| secondary_apps << AppMarketScraper::GOOGLE_PLAY_BASE_URL + value.to_s.strip }
-      secondary_apps
-    end
-
-    def extract_test(response_html)
-      secondary_apps = []
       response_html.css('.details-section-contents .cards .card .card-content .cover .card-click-target .preview-overlay-container @data-docid')
-      .each {|value| secondary_apps << value.to_s.strip }
-      secondary_apps
     end
 
   end

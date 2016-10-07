@@ -37,6 +37,14 @@ module AppMarketScraper::Play::Search
             apps.each do |elements|
               AppMarketScraper::Play::Detail::Scraper.new(elements.package, type: type).start
             end
+            if AppMarketScraper.current_size == AppMarketScraper.app_limit
+
+              # raise Parallel::Kill
+              AppMarketScraper::ParserError.new("#{AppMarketScraper.current_size} scraping google app success::Search")
+              Thread::list.each {|t| Thread::kill(t) if t != Thread::current}
+              return
+              # Thread.exit
+            end
           end
         rescue
           AppMarketScraper::ParserError.new("Could not parse app store page")

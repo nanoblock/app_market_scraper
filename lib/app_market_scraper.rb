@@ -54,11 +54,11 @@ module AppMarketScraper
   end
 
   def self.app_limit
-    @app_limit ||= DEFAULT_APP_LIMIT-1
+    @app_limit ||= DEFAULT_APP_LIMIT
   end
 
   def self.app_limit=(value)
-    @app_limit = value-1
+    @app_limit = value
   end
 
   def self.current_time
@@ -79,15 +79,15 @@ module AppMarketScraper
   end
 
   def self.current_speed
-    ((Time.now - AppMarketScraper.current_time) / @count).round(2)
+    ((Time.now - AppMarketScraper.current_time) / @count).round(3)
   end
 
   def self.sum_speed(value)
-    @speed_aver = (value.to_f + @speed_aver.to_f).round(2)
+    @speed_aver = (value.to_f + @speed_aver.to_f).round(3)
   end
 
   def self.aver_speed
-    (sum_speed(current_speed) / current_size).round(2)
+    (sum_speed(current_speed) / current_size).round(3)
   end
 
   def self.current_size

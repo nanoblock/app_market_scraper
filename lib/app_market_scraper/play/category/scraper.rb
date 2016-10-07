@@ -32,7 +32,7 @@ module AppMarketScraper::Play::Category
       if @type == AppMarketScraper::Play.category
         return AppMarketScraper::GOOGLE_PLAY_CATEGORY_APPS_URL
       end
-      
+
       uri = AppMarketScraper::GOOGLE_PLAY_CATEGORY_URL
       uri += "/#{category}"
       uri += "?&hl=#{AppMarketScraper.lang}"
@@ -42,7 +42,7 @@ module AppMarketScraper::Play::Category
     def response_handler(response)
       if response.success?
         if type == "base"
-          # AppMarketScraper::Play::Detail::Parser.new(response.body, type: type).parse
+          AppMarketScraper::Play::Category::Parser.new(response.body, type: type).parse
         else
           # AppMarketScraper::Play::Detail::Parser.new(response.body, type: type).parse
         end
