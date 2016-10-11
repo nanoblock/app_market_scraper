@@ -31,20 +31,22 @@ module AppMarketScraper::Play::Detail
       rescue
         AppMarketScraper::ParserError.new("Could not parse app store page")
       end
-
-      if AppMarketScraper.current_size == AppMarketScraper.app_limit
-        AppMarketScraper::ParserError.new("#{AppMarketScraper.current_size} scraping google app success::Detail")
-        Thread::list.each {|t| Thread::kill(t) if t != Thread::current}
-        # raise Parallel::Kill
-        return
-        # Thread.exit
-      else
+      return if app_nil?(@app)
+      
+      if AppMarketScraper::Play.array.uniq(@app.package)
         AppMarketScraper::Play.array.add(@app)
         AppMarketScraper.play_scrap_counter
-        
-        AppMarketScraper::Play.package.add_collection(extract_secondary_content(response_html))
+      else
+        # puts "This app is exist!! #{AppMarketScraper::Play.package.size}\n"
       end
       
+      
+      # if AppMarketScraper.current_size == AppMarketScraper.app_limit
+      #   AppMarketScraper.thread_exit
+      #   return
+      # end
+
+      AppMarketScraper::Play.package.add_collection(extract_secondary_content(response_html))
     end
 
     private
@@ -70,6 +72,13 @@ module AppMarketScraper::Play::Detail
       @app.address ||= extract_address(response_html)
       @app.description ||= extract_description(response_html)
       @app.developer_web_site ||= extract_developer_web_site(response_html)
+    end
+
+    def app_nil?(app)
+      if app.email.nil? || app.category.nil? || app.download.nil? || app.description.nil?
+        return true
+      end
+      return false
     end
 
     def extract_name(response_html)

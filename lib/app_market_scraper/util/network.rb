@@ -27,8 +27,7 @@ module AppMarketScraper::Util
       @user_agent = value
     end
 
-    def self.request_opts(opts)
-      opts ||= {}
+    def self.request_opts(opts={})
       opts[:timeout] ||= @timeout
       opts[:connecttimeout] ||= @connect_timeout
       opts[:ssl_verifypeer] = false
@@ -51,6 +50,8 @@ module AppMarketScraper::Util
           AppMarketScraper::NotFoundError.new("Unable to find app in store: #{codes}")
         when 403
           AppMarketScraper::UnavailableError.new("Unavailable app (country restriction?): #{codes}")
+        when 0
+
         else
           AppMarketScraper::ResponseError.new("Unhandled response: #{codes}")
         end

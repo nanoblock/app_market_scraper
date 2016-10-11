@@ -24,7 +24,11 @@ module AppMarketScraper::Util
           array.uniq!
         end
       end
-      self
+      array
+    end
+
+    def get
+      array
     end
 
     def pop
@@ -61,7 +65,6 @@ module AppMarketScraper::Util
     end
 
     def delete_all
-      "come"
       self.clear
     end
 

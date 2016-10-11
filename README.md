@@ -1,9 +1,5 @@
 # AppMarketScraper
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/app_market_scraper`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
-
+  Yongseok should scrap the company, information of the registered app on Google Play
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -20,19 +16,90 @@ Or install it yourself as:
 
     $ gem install app_market_scraper
 
-## Usage
+##Usage
 
-TODO: Write usage instructions here
+### Default Language & country
+DEFAULT_LANG = 'ko'
+DEFAULT_COUNTRY = 'ko'
 
-## Development
+```ruby
+# You can also set the language & country settings
+AppMarketScraper.lang = 'en'
+AppMarketScraper.country = 'en'
+```
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+###Default Config
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+DEFAULT_THREAD_LIMIT = 100
+DEFAULT_APP_LIMIT = 200
+CURRENT_TIME = Time.now
+DEFAULT_LOG_PATH = File.expand_path("../../../app_market_scraper.log", __FILE__)
+DEFAULT_BASE_PATH = File.expand_path("../../../smta_play_ko_writer.csv", __FILE__)
 
-## Contributing
+###Global variable
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/app_market_scraper.
+```ruby
+AppMarketScraper::Play.package
+AppMarketScraper::Play.array
+```
+
+###Scrap Mode
+
+You must set the type.
+You can set the mode of scrap type setting.
+type -> base or multi
+Default type is base
+
+```ruby
+AppMarketScraper::Play::Detail::Scraper.new(package, type: "base").start
+AppMarketScraper::Play::Detail::Scraper.new(package, type: "multi").start
+```
+
+###Parallel Execution
+
+```ruby
+# 100 Processes -> finished after 1 run
+results = Parallel.map(['a','b','c'], in_processes: 100) { |array_item| ... }
+
+# 100 Threads -> finished after 1 run
+results = Parallel.each(['d','e','f'], in_threads: 100) { |array_item| ... }
+```
+
+###Sample code
+
+```ruby
+result_app = AppMarketScraper::Play::App.new
+result_app = AppMarketScraper::Play::Detail::Scraper.new(package, type: "base").start
+```
+
+###Running parallel sample code
+
+```ruby
+Parallel.each_with_index(target_array, in_threads: AppMarketScraper.thread_limit) { |package, index|
+  if AppMarketScraper.current_size == AppMarketScraper.app_limit
+    AppMarketScraper.thread_exit
+    break
+  end
+
+  if AppMarketScraper.backup_count.include?(AppMarketScraper.current_size) && !AppMarketScraper.backup_count.nil?
+    AppMarketScraper.csv_writer unless AppMarketScraper.current_size == 0
+  end
+
+  AppMarketScraper::Play::Detail::Scraper.new(package, type: "multi").start
+  AppMarketScraper::Play.package.array.delete_at(index)
+}
+```
+
+###TIP
+When writing a csv file, should not end the program.
+You should check the status of the csv writer before exiting the program.
+```ruby
+#When the program starts writing the CSV file, returns true
+AppMarketScraper.backup_start?
+```
+<!-- ## Contributing -->
+
+<!-- Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/app_market_scraper. -->
 
 
 ## License

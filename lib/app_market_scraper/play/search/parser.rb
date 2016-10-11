@@ -21,7 +21,6 @@ module AppMarketScraper::Play::Search
         return
       end
 
-      
       @app = AppMarketScraper::Play::App.new
 
       doc.css('.card').each do |response_html|
@@ -38,12 +37,8 @@ module AppMarketScraper::Play::Search
               AppMarketScraper::Play::Detail::Scraper.new(elements.package, type: type).start
             end
             if AppMarketScraper.current_size == AppMarketScraper.app_limit
-
-              # raise Parallel::Kill
-              AppMarketScraper::ParserError.new("#{AppMarketScraper.current_size} scraping google app success::Search")
-              Thread::list.each {|t| Thread::kill(t) if t != Thread::current}
+              AppMarketScraper.thread_exit
               return
-              # Thread.exit
             end
           end
         rescue

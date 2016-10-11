@@ -9,8 +9,23 @@ module AppMarketScraper::Util
 
     def add(element)
       if instance_of?(element)
-        super
+        array << element
       end
+    end
+
+    def reverse_each_with_index &block
+      to_enum.with_index.reverse_each &block
+    end
+
+    def uniq(value)
+      array.each do |element|
+        return false if element.package == value
+      end
+      return true
+    end
+
+    def get
+      array
     end
 
     private

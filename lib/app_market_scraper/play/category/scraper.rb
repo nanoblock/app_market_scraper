@@ -29,26 +29,37 @@ module AppMarketScraper::Play::Category
 
     private
     def set_url
-      if @type == AppMarketScraper::Play.category
-        return AppMarketScraper::GOOGLE_PLAY_CATEGORY_APPS_URL
-      end
-
       uri = AppMarketScraper::GOOGLE_PLAY_CATEGORY_URL
       uri += "/#{category}"
-      uri += "?&hl=#{AppMarketScraper.lang}"
+      unless family_range?
+        uri += "?"
+      end
+      uri += "&hl=#{AppMarketScraper.lang}"
       uri += "&gl=#{AppMarketScraper.country}"
+      uri
     end
 
     def response_handler(response)
       if response.success?
-        if type == "base"
-          AppMarketScraper::Play::Category::Parser.new(response.body, type: type).parse
-        else
-          # AppMarketScraper::Play::Detail::Parser.new(response.body, type: type).parse
-        end
+        AppMarketScraper::Play::Category::Parser.new(response.body, type: type).parse
+        # if type == "base"
+        #   
+        # else
+
+        #   AppMarketScraper::Play::Category::Parser.new(response.body, type: type).parse
+        # end
+          
       else
         AppMarketScraper::Util::Network.throw_exception(response)
       end
+    end
+
+    def family_range?
+
+      if category == AppMarketScraper::Play.categorys[:family_age_range1] || category == AppMarketScraper::Play.categorys[:family_age_range2]|| category == AppMarketScraper::Play.categorys[:family_age_range3]
+        return true
+      end
+      return false
     end
   end
 end
