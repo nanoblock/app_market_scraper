@@ -1,4 +1,8 @@
 # AppMarketScraper
+[![language](https://img.shields.io/badge/language-ruby-coral.svg)]()
+[![version](https://img.shields.io/badge/version-1.0.0-green.svg)]()
+2.3.1
+[![e-mail](https://img.shields.io/badge/email-taiyou88@naver.com-blue.svg)](mailto:taiyou88@naver.com)
   Yongseok should scrap the company, information of the registered app on Google Play
 ## Installation
 
