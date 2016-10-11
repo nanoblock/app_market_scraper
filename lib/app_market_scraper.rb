@@ -273,7 +273,7 @@ module AppMarketScraper
         csv_array.clear
         AppMarketScraper::AppMarketScraperLogger.new("@@@@@@@@@@@@@ E N D @@@@@@@@@@@@@@\n")
       rescue => e
-        AppMarketScraper::AppMarketScraperError.new(e)
+        AppMarketScraper::AppMarketScraperError.new("#{e}\n")
       end    
       }
     

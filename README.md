@@ -1,6 +1,6 @@
 # AppMarketScraper
 [![language](https://img.shields.io/badge/language-ruby-coral.svg)](https://www.ruby-lang.org/en/)
-![version](https://img.shields.io/badge/version-1.0.0-green.svg)
+![version](https://img.shields.io/badge/version-0.0.1-green.svg)
 ![e-mail](https://img.shields.io/badge/email-taiyou88@naver.com-blue.svg)
 
 AppMarketScraper should scrap the company, information of the registered app on Google Play
@@ -40,9 +40,7 @@ AppMarketScraper::Play.array
 
 ### Scrap Mode
 
-You must set the type.<br>
 You can set the mode of scrap type setting.<br>
-type -> base or multi<br>
 Default type is base<br>
 
 ```ruby
@@ -68,6 +66,25 @@ result_app = AppMarketScraper::Play::Detail::Scraper.new(package, type: "base").
 ```
 
 ### Running parallel sample code
+```ruby
+AppMarketScraper.csv_reader(AppMarketScraper.csv_read_path)
+    
+    while AppMarketScraper::Play.package.size > 1 do
+      Parallel.each_with_index(AppMarketScraper::Play.package.array, in_threads: AppMarketScraper.thread_limit) { |package, index|
+        if AppMarketScraper.current_size == AppMarketScraper.app_limit
+          AppMarketScraper.thread_exit
+          break
+        end
+
+        if AppMarketScraper.backup_count.include?(AppMarketScraper.current_size) && !AppMarketScraper.backup_count.nil?
+          AppMarketScraper.csv_writer unless AppMarketScraper.current_size == 0
+        end
+
+        AppMarketScraper::Play::Detail::Scraper.new(package, type: "multi").start
+        AppMarketScraper::Play.package.array.delete_at(index)
+}
+end
+```
 
 ```ruby
 Parallel.each_with_index(target_array, in_threads: AppMarketScraper.thread_limit) { |package, index|
