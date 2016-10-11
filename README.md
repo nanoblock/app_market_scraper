@@ -23,29 +23,24 @@ Or install it yourself as:
 ##Usage
 
 ### Default Language & country
-DEFAULT_LANG = 'ko'
-
+DEFAULT_LANG = 'ko'<br>
 DEFAULT_COUNTRY = 'ko'
 
 ```ruby
 # You can also set the language & country settings
 AppMarketScraper.lang = 'en'
-
 AppMarketScraper.country = 'en'
 ```
 
 ###Default Config
 
+```ruby
 DEFAULT_THREAD_LIMIT = 100
-
 DEFAULT_APP_LIMIT = 200
-
 CURRENT_TIME = Time.now
-
 DEFAULT_LOG_PATH = File.expand_path("../../../app_market_scraper.log", __FILE__)
-
 DEFAULT_BASE_PATH = File.expand_path("../../../smta_play_ko_writer.csv", __FILE__)
-
+```
 ###Global variable
 
 ```ruby
@@ -55,13 +50,10 @@ AppMarketScraper::Play.array
 
 ###Scrap Mode
 
-You must set the type.
-
-You can set the mode of scrap type setting.
-
-type -> base or multi
-
-Default type is base
+You must set the type.<br>
+You can set the mode of scrap type setting.<br>
+type -> base or multi<br>
+Default type is base<br>
 
 ```ruby
 AppMarketScraper::Play::Detail::Scraper.new(package, type: "base").start
@@ -104,12 +96,11 @@ Parallel.each_with_index(target_array, in_threads: AppMarketScraper.thread_limit
 ```
 
 ###TIP
-When writing a csv file, should not end the program.
-
+When writing a csv file, should not end the program.<br>
 You should check the status of the csv writer before exiting the program.
 
 ```ruby
-#When the program starts writing the CSV file, returns true
+# When the program starts writing the CSV file, returns true
 AppMarketScraper.backup_start?
 ```
 <!-- ## Contributing -->
