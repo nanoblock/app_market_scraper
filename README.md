@@ -1,9 +1,9 @@
 # AppMarketScraper
 [![language](https://img.shields.io/badge/language-ruby-coral.svg)]()
 [![version](https://img.shields.io/badge/version-1.0.0-green.svg)]()
-2.3.1
 [![e-mail](https://img.shields.io/badge/email-taiyou88@naver.com-blue.svg)](mailto:taiyou88@naver.com)
-  Yongseok should scrap the company, information of the registered app on Google Play
+  
+Yongseok should scrap the company, information of the registered app on Google Play
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -24,20 +24,26 @@ Or install it yourself as:
 
 ### Default Language & country
 DEFAULT_LANG = 'ko'
+
 DEFAULT_COUNTRY = 'ko'
 
 ```ruby
 # You can also set the language & country settings
 AppMarketScraper.lang = 'en'
+
 AppMarketScraper.country = 'en'
 ```
 
 ###Default Config
 
 DEFAULT_THREAD_LIMIT = 100
+
 DEFAULT_APP_LIMIT = 200
+
 CURRENT_TIME = Time.now
+
 DEFAULT_LOG_PATH = File.expand_path("../../../app_market_scraper.log", __FILE__)
+
 DEFAULT_BASE_PATH = File.expand_path("../../../smta_play_ko_writer.csv", __FILE__)
 
 ###Global variable
@@ -50,8 +56,11 @@ AppMarketScraper::Play.array
 ###Scrap Mode
 
 You must set the type.
+
 You can set the mode of scrap type setting.
+
 type -> base or multi
+
 Default type is base
 
 ```ruby
@@ -96,7 +105,9 @@ Parallel.each_with_index(target_array, in_threads: AppMarketScraper.thread_limit
 
 ###TIP
 When writing a csv file, should not end the program.
+
 You should check the status of the csv writer before exiting the program.
+
 ```ruby
 #When the program starts writing the CSV file, returns true
 AppMarketScraper.backup_start?
