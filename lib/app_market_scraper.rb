@@ -84,12 +84,12 @@ module AppMarketScraper
     @time_count = @time_count.next
 
     logger = "\n[#{Time.now}]  Google Apps scraping succeeded!!
-    \tscraped app count   -> #{current_size}
-    \tcurrent speed       -> #{current_speed} app/s
-    \taver speed          -> #{aver_speed} app/s
-    \ttake time           -> #{seconds_to_time(take_time)}
-    \t예상 시간             -> #{seconds_to_time(time_remaining)} app/s
-    \tbackup?             -> #{AppMarketScraper.backup_start?}" 
+    \tscraped app count               -> #{current_size}
+    \tcurrent speed                   -> #{current_speed} app/s
+    \taver speed                      -> #{aver_speed} app/s
+    \ttake time                       -> #{seconds_to_time(take_time)}
+    \testimated_time_of_completion    -> #{seconds_to_time(estimated_time_of_completion)} app/s
+    \tbackup?                         -> #{AppMarketScraper.backup_start?}" 
     puts logger
     AppMarketScraper.log.debug(logger)
   end
@@ -110,7 +110,7 @@ module AppMarketScraper
     Time.now - AppMarketScraper.current_time
   end
 
-  def self.time_remaining
+  def self.estimated_time_of_completion
     @remainig_time = (app_limit-current_size) * aver_speed
   end
 
@@ -185,7 +185,8 @@ module AppMarketScraper
   def self.csv_reader(target_path)
 
     if File.exist?(target_path) 
-      puts "csv read start"
+      AppMarketScraper::AppMarketScraperLogger.new("@@@@@@@@@ CSV Read Start @@@@@@@@@\n")
+
       apps = AppMarketScraper::Util::AppArray.new
       csv_data = CSV.read(target_path, headers: true, encoding: 'UTF-8')
       csv_data.each_with_index do |data, index|
@@ -214,9 +215,9 @@ module AppMarketScraper
       # end
       
       AppMarketScraper::AppMarketScraperLogger.new("CSV READER SUCCESS\n
-        \tapp size -> #{AppMarketScraper::Play.array.size}")
-
-      AppMarketScraper::Play.array.get.reverse.slice(0, 100).each_with_index {|item, index| 
+        \tapp size -> #{AppMarketScraper::Play.array.size}\n")
+      
+      AppMarketScraper::Play.array.get.shuffle.sample(100).each_with_index {|item, index| 
         AppMarketScraper::Play.package.add(item.package)
       }
 
@@ -227,9 +228,11 @@ module AppMarketScraper
   def self.csv_writer
 
     unless AppMarketScraper.backup_start?
+      AppMarketScraper::AppMarketScraperLogger.new("@@@@@@@@ CSV Write Start @@@@@@@@@\n")
+
       AppMarketScraper.backup_start = true
       Parallel::each(["0"], in_threads: 1) { |not_used|
-        puts "\n@@@@@@@@@@@@@@@@@@@ CSV file write start @@@@@@@@@@@@@@@@@@@\n"
+
       header = ["name", "email", "category", "developer", "package", "stars", "download", "updated",
         "content_rating", "version", "operating_system", "address", "description", "url", "image_url",
         "developer_web_site"]
@@ -268,9 +271,9 @@ module AppMarketScraper
         end
         AppMarketScraper.backup_start = false
         csv_array.clear
-        puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@ E N D @@@@@@@@@@@@@@@@@@@@@@@@@@@\n"
+        AppMarketScraper::AppMarketScraperLogger.new("@@@@@@@@@@@@@ E N D @@@@@@@@@@@@@@\n")
       rescue => e
-        p e
+        AppMarketScraper::AppMarketScraperError.new(e)
       end    
       }
     

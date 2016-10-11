@@ -1,9 +1,9 @@
 # AppMarketScraper
 [![language](https://img.shields.io/badge/language-ruby-coral.svg)](https://www.ruby-lang.org/en/)
 ![version](https://img.shields.io/badge/version-1.0.0-green.svg)
-[![e-mail](https://img.shields.io/badge/email-taiyou88@naver.com-blue.svg)](mailto:taiyou88@naver.com)
+![e-mail](https://img.shields.io/badge/email-taiyou88@naver.com-blue.svg)
 
-Yongseok should scrap the company, information of the registered app on Google Play
+AppMarketScraper should scrap the company, information of the registered app on Google Play
 ## Install
 
 ```ruby

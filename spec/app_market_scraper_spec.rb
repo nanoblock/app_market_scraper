@@ -7,27 +7,30 @@ describe AppMarketScraper do
   end
 
   it 'restart' do
-    puts "@@@@@@@@@@@@@@@@@@@ Scrap Google App Start @@@@@@@@@@@@@@@@@@@"
+    AppMarketScraper::AppMarketScraperLogger.new("@@@@@ Scrap Google App Start @@@@@\n")
+
     AppMarketScraper.app_limit = 112500
     AppMarketScraper.thread_limit = 100
     AppMarketScraper.backup_count = 500
+    AppMarketScraper.csv_read_path = "../smta_play_ko_writer_back.csv"
     puts "path            -> #{AppMarketScraper.path}"
     puts "log_path        -> #{AppMarketScraper.log_path}"
-    # puts "csv_read_path   -> #{AppMarketScraper.csv_read_path}"
-    # puts "lang          -> #{AppMarketScraper.lang}"
-    # puts "country       -> #{AppMarketScraper.country}"
+    puts "csv_read_path   -> #{AppMarketScraper.csv_read_path}"
+    puts "lang          -> #{AppMarketScraper.lang}"
+    puts "country       -> #{AppMarketScraper.country}"
 
-    AppMarketScraper.csv_reader("../smta_play_ko_writer.csv")
+
+    AppMarketScraper.csv_reader(AppMarketScraper.csv_read_path)
     
     while AppMarketScraper::Play.package.size > 1 do
       Parallel.each_with_index(AppMarketScraper::Play.package.array, in_threads: AppMarketScraper.thread_limit) { |package, index|
         if AppMarketScraper.current_size == AppMarketScraper.app_limit
           AppMarketScraper.thread_exit
-          break 0
+          break
         end
 
         if AppMarketScraper.backup_count.include?(AppMarketScraper.current_size) && !AppMarketScraper.backup_count.nil?
-          AppMarketScraper.csv_writer unless AppMarketScraper.current_size == 29000
+          AppMarketScraper.csv_writer unless AppMarketScraper.current_size == 0
         end
 
         AppMarketScraper::Play::Detail::Scraper.new(package, type: "multi").start
