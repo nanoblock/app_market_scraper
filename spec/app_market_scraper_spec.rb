@@ -31,9 +31,10 @@ describe AppMarketScraper do
         end
 
         if AppMarketScraper.backup_count.include?(AppMarketScraper.current_size) && !AppMarketScraper.backup_count.nil?
-          AppMarketScraper.csv_writer unless AppMarketScraper.current_size == 37403
+          AppMarketScraper.csv_writer unless AppMarketScraper.current_size == 39800
+
         end
-        # AppMarketScraper::AppMarketScraperLogger.new("Item: #{package}, Worker: #{Parallel.worker_number}")
+        AppMarketScraper::AppMarketScraperLogger.new("Item: #{package}, Worker: #{Parallel.worker_number}")
         AppMarketScraper::Play::Detail::Scraper.new(package, type: "multi").start
         AppMarketScraper::Play.package.array.delete_at(index)
       }
