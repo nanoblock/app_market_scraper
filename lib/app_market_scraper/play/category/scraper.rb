@@ -29,14 +29,19 @@ module AppMarketScraper::Play::Category
 
     private
     def set_url
-      uri = AppMarketScraper::GOOGLE_PLAY_CATEGORY_URL
-      uri += "/#{category}"
-      unless family_range?
-        uri += "?"
+      if category == AppMarketScraper::Play.category
+        return uri = AppMarketScraper::GOOGLE_PLAY_CATEGORY_APPS_URL
+      else
+        uri = AppMarketScraper::GOOGLE_PLAY_CATEGORY_URL
+        uri += "/#{category}"
+        unless family_range?
+          uri += "?"
+        end
+        uri += "&hl=#{AppMarketScraper.lang}"
+        uri += "&gl=#{AppMarketScraper.country}"
+        return uri
       end
-      uri += "&hl=#{AppMarketScraper.lang}"
-      uri += "&gl=#{AppMarketScraper.country}"
-      uri
+      
     end
 
     def response_handler(response)

@@ -10,8 +10,8 @@ describe AppMarketScraper do
     AppMarketScraper::AppMarketScraperLogger.new("@@@@@ Scrap Google App Start @@@@@\n")
 
     AppMarketScraper.app_limit = 112500
-    AppMarketScraper.thread_limit = 100
-    AppMarketScraper.backup_count = 500
+    AppMarketScraper.thread_limit = 200
+    AppMarketScraper.backup_count = 200
     AppMarketScraper.csv_read_path = "../smta_play_ko_writer_back.csv"
     puts "path            -> #{AppMarketScraper.path}"
     puts "log_path        -> #{AppMarketScraper.log_path}"
@@ -21,7 +21,8 @@ describe AppMarketScraper do
 
 
     AppMarketScraper.csv_reader(AppMarketScraper.csv_read_path)
-    
+    AppMarketScraper::Play::Category::Scraper.new(category: AppMarketScraper::Play.category, type: "multi").start
+
     while AppMarketScraper::Play.package.size > 1 do
       Parallel.each_with_index(AppMarketScraper::Play.package.array, in_threads: AppMarketScraper.thread_limit) { |package, index|
         if AppMarketScraper.current_size == AppMarketScraper.app_limit
@@ -30,9 +31,9 @@ describe AppMarketScraper do
         end
 
         if AppMarketScraper.backup_count.include?(AppMarketScraper.current_size) && !AppMarketScraper.backup_count.nil?
-          AppMarketScraper.csv_writer unless AppMarketScraper.current_size == 0
+          AppMarketScraper.csv_writer unless AppMarketScraper.current_size == 37000
         end
-
+        # AppMarketScraper::AppMarketScraperLogger.new("Item: #{package}, Worker: #{Parallel.worker_number}")
         AppMarketScraper::Play::Detail::Scraper.new(package, type: "multi").start
         AppMarketScraper::Play.package.array.delete_at(index)
       }

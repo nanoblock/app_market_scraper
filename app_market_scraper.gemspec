@@ -10,9 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["yongseok.jang@grep.services"]
 
   spec.summary       = %q{This gem is application market scraper}
-  spec.description   = %q{TODO: 
-    2. sync -> true setting & change error class Logger -> http://blog.livedoor.jp/sonots/archives/32645828.html
-    3. create hydra queue handler}
+  spec.description   = %q{AppMarketScraper should scrap the company, information of the registered app on Google Play}
   spec.homepage      = "https://github.com/nanoblock/app_market_scraper"
   spec.license       = "MIT"
 

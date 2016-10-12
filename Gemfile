@@ -5,3 +5,6 @@ gemspec
 
 gem 'addressable'
 gem 'typhoeus'
+gem 'parallel'
+gem 'csv'
+gem 'logger'
